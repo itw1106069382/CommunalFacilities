@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.microboom.dao.ProductDao">
+
+	<!-- 查询所有商品分类信息 -->
+	<resultMap id="product_productDir" type="product"
+		autoMapping="true">
+		<!-- 配置商品与商品类型一对一关系 -->
+		<association property="productDir" javaType="productDir"
+			column="dir_id" select="cn.microboom.dao.ProductDirDao.getProductDirById">
+		</association>
+	</resultMap>
+	<select id="findProduct" resultMap="product_productDir">
+		select * from product
+	</select>
+
+
+	<!-- 多条件查询商品信息 -->
+	<select id="getproduct" parameterType="java.util.Map" resultMap="product_productDir">
+		select * from product
+		<where>
+			<if test="productDirId>-1">
+				and dir_id=#{productDirId}
+			</if>
+			<if test="minSalePrice!=null and minSalePrice!=''">
+				and salePrice >= CAST(#{minSalePrice} AS DECIMAL(9,2))
+			</if>
+			<if test="maxSalePrice!=null and maxSalePrice!=''">
+				and salePrice <![CDATA[ <= ]]>
+				CAST(#{maxSalePrice} AS DECIMAL(9,2))
+			</if>
+			<if test="status>-1">
+				and status=CAST(#{status} AS SIGNED)
+			</if>
+			<if test="keyword!=null and keyword!=''">
+				and name like concat('%',#{keyword},'%')
+			</if>
+		</where>
+	</select>
+
+	<!-- 修改商品上架/下架 -->
+	<update id="updateProductByStatus">
+		update product set status=#{status} where id=#{id}
+	</update>
+	
+	<!-- 修改商品是否推荐 -->
+	<update id="updateProductByRecommended">
+		update product set recommended=#{recommended} where id=#{id}
+	</update>
+
+	<!-- 添加商品 -->
+	<insert id="saveProduct" parameterType="product">
+		insert into product(name,sn,costPrice,salePrice,marketPrice,
+		place,model,num,intro,dir_id,`status`,recommended,viewTimes,inputTime,smallPic) 
+		values(#{name},#{sn},#{costPrice},#{salePrice},#{marketPrice},
+		#{place},#{model},#{num},#{intro},#{dir_id},#{status},#{recommended},0,NOW(),#{smallPic})
+	</insert>
+	
+	<!-- 根据id查询商品信 -->
+	<select id="getProductById" parameterType="int" resultMap="product_productDir">
+		select * from product where id=#{productId}
+	</select>
+	
+	<!-- 将商品浏览次数+1 -->
+	<update id="updateProductByIdToviewTimes" parameterType="int">
+		update product set viewTimes=viewTimes+1 where id=#{productId}
+	</update>
+	
+	<!-- 修改商品时根据id查询商品信息 -->
+	<select id="getProductByIdTwo" parameterType="int" resultType="product">
+		select * from product where id=#{productId}
+	</select>
+	
+	<!-- 修改商品信息 -->
+	<update id="updateProduct" parameterType="product">
+		update product set name=#{name},sn=#{sn},dir_id=#{dir_id},costPrice=#{costPrice},
+		salePrice=#{salePrice},marketPrice=#{marketPrice},status=#{status},
+		recommended=#{recommended},place=#{place},model=#{model},num=#{num},
+		intro=#{intro},smallPic=#{smallPic},inputTime=#{inputTime} where id=#{id}
+	</update>
+	
+	<!-- 根据id删除商品信息 -->
+	<delete id="delProductById" parameterType="int">
+		delete from product where id=#{productId}
+	</delete>
+</mapper>

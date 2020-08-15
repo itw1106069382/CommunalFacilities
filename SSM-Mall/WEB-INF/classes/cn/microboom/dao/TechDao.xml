@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.microboom.dao.TechDao">
+
+<!-- 保存工程师任务 -->
+<insert id="saveTechTask" parameterType="cn.microboom.pojo.Technicianlog">
+insert into technicianlog(username,task,area,feedback,workinghours,anomalyid)
+values(#{technicianlog.username},#{technicianlog.task},#{technicianlog.area},#{technicianlog.feedback}
+,#{technicianlog.workinghours},#{technicianlog.anomalyid})
+</insert>
+
+</mapper>

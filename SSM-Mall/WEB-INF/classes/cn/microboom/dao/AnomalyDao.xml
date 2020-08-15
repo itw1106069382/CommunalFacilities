@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.microboom.dao.AnomalyDao">
+	
+<!-- 查询所有异常状态 -->
+<select id="findAnomaly" resultType="cn.microboom.pojo.Anomaly">
+select * from anomaly where del=0
+</select>
+
+<!-- 查询所有未完成异常状态 -->
+<select id="findUndoneAnomaly" resultType="cn.microboom.pojo.Anomaly">
+select * from anomaly where del=0 and done=0
+</select>
+
+<!-- 查询所有已完成异常状态 -->
+<select id="finddoneAnomaly" resultType="cn.microboom.pojo.Anomaly">
+select * from anomaly where del=0 and done=1
+</select>
+
+<!-- 查询指定用户的异常情况 -->
+<select id="findAnomalyByusername" resultType="cn.microboom.pojo.Anomaly">
+select * from anomaly where username=#{username}
+</select>
+
+<!-- 保存异常状态 -->
+<insert id="saveAnomaly" parameterType="cn.microboom.pojo.Anomaly">
+insert into anomaly(username,facilitiesname,remark,area,uploadtime,number)
+values(#{username},#{facilitiesname},#{remark},#{area},#{uploadtime},#{number})
+</insert>
+
+<!-- 上报异常情况 -->
+<insert id="uploadAnomaly" parameterType="cn.microboom.pojo.Anomaly">
+insert into anomaly(username,facilitiesname,remark,area,uploadtime,number,file)
+values(#{username},#{facilitiesname},#{remark},#{area},#{uploadtime},#{number},#{file})
+</insert>
+
+<!-- 删除异常情况 -->
+<update id="delAnomaly" parameterType="cn.microboom.pojo.Anomaly" >
+UPDATE anomaly SET del=1 WHERE id=#{id}
+</update>
+
+<!-- 异常情况指派成功 -->
+<update id="disposeAnomaly" parameterType="int" >
+UPDATE anomaly SET done=1,techname=#{techname} WHERE id=#{id}
+</update>
+
+<!-- 异常情况提交到技术部 -->
+<update id="submitToTheTechnicalDepartment" parameterType="int" >
+UPDATE anomaly SET servicedone=#{servicedone} WHERE id=#{id}
+</update>
+
+<!-- 恢复异常情况 -->
+<update id="regainAnomaly" parameterType="int" >
+UPDATE anomaly SET done=0 WHERE id=#{id}
+</update>
+
+<!-- 根据id查询流动状态 -->
+<select id="getAnomalyById" parameterType="int" resultType="cn.microboom.pojo.Anomaly">
+select * from anomaly where id=#{id}
+</select>
+
+<!-- 查询所有服务台处理异常 -->
+<select id="findAnomalyDone" parameterType="int" resultType="cn.microboom.pojo.Anomaly">
+select * from anomaly where servicedone=#{servicedone}
+</select>
+
+<!-- 修改流动状态 -->
+<update id="editAnomaly" parameterType="cn.microboom.pojo.Anomaly" >
+UPDATE anomaly SET remark=#{remark},uploadtime=#{uploadtime} WHERE id=#{id}
+</update>
+
+</mapper>

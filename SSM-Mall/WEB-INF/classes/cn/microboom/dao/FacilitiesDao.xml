@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.microboom.dao.FacilitiesDao">
+	
+<!-- 查询所有设施 -->
+<select id="findFacilities" resultType="cn.microboom.pojo.Facilities">
+select * from facilities where del=0
+</select>
+
+<!-- 查询已删除所有设施 -->
+<select id="findDelFacilities" resultType="cn.microboom.pojo.Facilities">
+select * from facilities where del=1
+</select>
+
+<!-- 查询公共设施条数 -->
+<select id="countFacilities" resultType="int">
+SELECT COUNT(id) FROM facilities
+</select>
+
+<!-- 查询所有设施名 -->
+<select id="findList" resultType="cn.microboom.pojo.Facilities">
+SELECT DISTINCT facilitiesname FROM facilities
+</select>
+
+<!-- 保存设施 -->
+<insert id="saveFacilities" parameterType="cn.microboom.pojo.Facilities">
+insert into facilities(username,facilitiesname,area,uploadtime,status)
+values(#{username},#{facilitiesname},#{area},#{uploadtime},#{status})
+</insert>
+
+<!-- 根据公共设施名和区域查找id -->
+<select id="getIdByFacilitiesArea" resultType="int">
+SELECT id FROM facilities WHERE facilitiesname=#{facilitiesname} AND area=#{area}
+</select>
+
+<!-- 根据id查询公共设施 -->
+<select id="getFacilitiesById" parameterType="int" resultType="cn.microboom.pojo.Facilities">
+select * from facilities where id=#{id}
+</select>
+
+<!-- 修改公共设施 -->
+<update id="editFacilities" parameterType="cn.microboom.pojo.Facilities" >
+UPDATE facilities SET facilitiesname=#{facilitiesname},status=#{status},area=#{area},uploadtime=#{uploadtime} WHERE id=#{id}
+</update>
+
+<!-- 删除公共设施 -->
+<update id="delFacilities" parameterType="cn.microboom.pojo.Facilities" >
+UPDATE facilities SET del=1 WHERE id=#{id}
+</update>
+
+<!-- 恢复公共设施 -->
+<update id="recycledFacilities" parameterType="cn.microboom.pojo.Facilities" >
+UPDATE facilities SET del=0 WHERE id=#{id}
+</update>
+
+<!-- 根据状态或地点查询公共设施 -->
+<select id="findSeek1" parameterType="cn.microboom.pojo.Facilities" resultType="cn.microboom.pojo.Facilities">
+SELECT * FROM facilities
+<where>
+	<!-- 状态是否为空 -->
+ <if test="status !=null and status!=''">
+ 	status like concat('%',#{status},'%')
+ </if>
+ <if test="area !=null and area!=''">
+ 	AND area like concat('%',#{area},'%')
+ </if>
+</where>
+</select>
+
+<!-- 根据状态或地点查询公共设施 -->
+<select id="findSeek" parameterType="cn.microboom.pojo.Facilities" resultType="cn.microboom.pojo.Facilities">
+SELECT * FROM facilities
+<where>
+	<!-- 状态是否为空 -->
+ <if test="status !=null and status!=''">
+ 	status like concat('%',#{status},'%')
+ </if>
+ <if test="area !=null and area!=''">
+ 	AND area like concat('%',#{area},'%')
+ </if>
+</where>
+limit #{page},#{limit}
+</select>
+
+<!-- 根据公共设施查询公共设施的地点 -->
+<select id="findFacilitiesArea" resultType="cn.microboom.pojo.Facilities">
+SELECT area FROM facilities where facilitiesname=#{facilitiesname}
+</select>
+</mapper>
